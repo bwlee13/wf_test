@@ -93,6 +93,13 @@ def filter_data_by_worth(df):
     return df_final
 
 
+def filter_df_by_quality(df, quality):
+
+    quality_df = df[df['quality'].str.contains(quality)]
+
+    return quality_df
+
+
 def get_db_conn():
     global engine
     CONNECTION = pyodbc.connect(db_conn_string)

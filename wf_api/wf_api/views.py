@@ -3,7 +3,7 @@ from django.views import View
 from utils import handle_view_exception
 import os
 import pandas as pd
-from etl_util import get_all_sample_data, filter_data_by_worth, push_df_to_db
+from etl_util import get_all_sample_data, filter_data_by_worth, push_df_to_db, filter_df_by_quality
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def update_csv(request):
     """
     :param request: filename, bonus1 = False
-    :return: "Success message on file update
+    :return: Success message on file update
     example: request = {filename: 'consolidated_output.1.csv', 'bonus1':'True'}
     """
     if request.method == 'POST':
@@ -36,4 +36,22 @@ def update_csv(request):
 
         return JsonResponse(response)
 
+
+@handle_view_exception
+def get_quality(request):
+    """
+    :param request: quality
+    :return: products list
+    example: request = {'quality': 'high'}
+        """
+    if request.method == 'GET':
+        quality = request.get('quality')
+
+        df = pd.read_csv('output/consolidated_output.1.csv', index_col=None, header=0)
+        quality_df = filter_df_by_quality(df)
+
+        result = HttpResponse(quality_df, content_type = 'application/json')
+        logger.info("Data returned successfully")
+
+        return result
 
